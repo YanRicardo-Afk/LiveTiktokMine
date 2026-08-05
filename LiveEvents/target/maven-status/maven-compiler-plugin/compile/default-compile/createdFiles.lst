@@ -1,3 +1,6 @@
 com/zapphon/liveevents/managers/EventManager.class
+com/zapphon/liveevents/actions/Action.class
+com/zapphon/liveevents/actions/SpawnMobAction.class
 com/zapphon/liveevents/LiveEvents.class
+com/zapphon/liveevents/actions/TestAction.class
 com/zapphon/liveevents/commands/LiveCommand.class

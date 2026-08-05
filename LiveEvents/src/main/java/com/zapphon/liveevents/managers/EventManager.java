@@ -1,12 +1,12 @@
 package com.zapphon.liveevents.managers;
 
-import org.bukkit.command.CommandSender;
+import com.zapphon.liveevents.actions.Action;
 
 public class EventManager {
 
-    public void executeTest(CommandSender sender) {
+    public void execute(Action action) {
 
-        sender.sendMessage("§aEventManager funcionando!");
+        action.execute();
 
     }
 
