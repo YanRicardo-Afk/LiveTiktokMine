@@ -1,0 +1,17 @@
+name: LiveEvents
+version: 1.0.0
+main: com.zapphon.liveevents.LiveEvents
+api-version: '1.21'
+author: Zapphon
+description: Sistema de eventos para lives.
+
+commands:
+  live:
+    description: Comando principal do LiveEvents
+    usage: /live
+    permission: liveevents.admin
+
+permissions:
+  liveevents.admin:
+    description: Permite utilizar o plugin.
+    default: op
