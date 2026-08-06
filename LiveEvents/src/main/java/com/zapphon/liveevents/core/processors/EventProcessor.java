@@ -1,6 +1,12 @@
 package com.zapphon.liveevents.core.processors;
 
 import com.zapphon.liveevents.LiveEvents;
+import com.zapphon.liveevents.core.events.ParticleEvent;
+import com.zapphon.liveevents.core.events.SoundEvent;
+import com.zapphon.liveevents.core.events.TitleEvent;
+import com.zapphon.liveevents.core.handlers.ParticleHandler;
+import com.zapphon.liveevents.core.handlers.SoundHandler;
+import com.zapphon.liveevents.core.handlers.TitleHandler;
 import com.zapphon.liveevents.core.events.BaseEvent;
 import com.zapphon.liveevents.core.events.LightningEvent;
 import com.zapphon.liveevents.core.events.MobSpawnEvent;
@@ -34,6 +40,20 @@ public class EventProcessor {
                 LightningEvent.class,
                 new LightningHandler()
         );
+        register(
+        TitleEvent.class,
+        new TitleHandler()
+);
+
+register(
+        SoundEvent.class,
+        new SoundHandler()
+);
+
+register(
+        ParticleEvent.class,
+        new ParticleHandler()
+);
     }
 
     public <T extends BaseEvent> void register(

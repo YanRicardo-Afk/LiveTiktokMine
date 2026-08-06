@@ -12,15 +12,20 @@ public abstract class PlayerEvent extends BaseEvent {
             GiftType gift,
             Player target
     ) {
+        this(viewer, gift, target, 0);
+    }
 
-        super(viewer, gift);
-
+    protected PlayerEvent(
+            String viewer,
+            GiftType gift,
+            Player target,
+            int delayTicks
+    ) {
+        super(viewer, gift, delayTicks);
         this.target = target;
-
     }
 
     public Player getTarget() {
         return target;
     }
-
 }

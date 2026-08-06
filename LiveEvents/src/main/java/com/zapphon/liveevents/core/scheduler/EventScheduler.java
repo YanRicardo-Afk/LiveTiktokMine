@@ -8,31 +8,21 @@ public class EventScheduler extends BukkitRunnable {
 
     private final LiveEngine engine;
 
-    public EventScheduler(
-            LiveEngine engine
-    ) {
-
+    public EventScheduler(LiveEngine engine) {
         this.engine = engine;
-
     }
 
     @Override
     public void run() {
-
         engine.tick();
-
     }
 
-    public void start(
-            LiveEvents plugin
-    ) {
+    public void start(LiveEvents plugin) {
 
         runTaskTimer(
                 plugin,
                 1L,
-                2L
+                1L
         );
-
     }
-
 }

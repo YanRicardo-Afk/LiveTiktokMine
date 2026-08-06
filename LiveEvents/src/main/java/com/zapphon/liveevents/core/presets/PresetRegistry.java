@@ -8,21 +8,31 @@ public class PresetRegistry {
     private final Map<String, Preset> presets =
             new HashMap<>();
 
-    public void register(Preset preset){
-
+    public void register(Preset preset) {
         presets.put(
-                preset.id().toLowerCase(),
+                preset.getId().toLowerCase(),
                 preset
         );
-
     }
 
-    public Preset get(String id){
+    public Preset get(String id) {
 
-        return presets.get(
-                id.toLowerCase()
-        );
+        if (id == null) {
+            return null;
+        }
 
+        return presets.get(id.toLowerCase());
     }
 
+    public boolean contains(String id) {
+        return get(id) != null;
+    }
+
+    public void clear() {
+        presets.clear();
+    }
+
+    public int size() {
+        return presets.size();
+    }
 }

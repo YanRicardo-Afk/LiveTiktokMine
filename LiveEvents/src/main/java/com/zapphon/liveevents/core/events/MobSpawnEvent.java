@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 public class MobSpawnEvent extends PlayerEvent {
 
     private final EntityType entity;
-
     private final int amount;
 
     public MobSpawnEvent(
@@ -17,12 +16,20 @@ public class MobSpawnEvent extends PlayerEvent {
             EntityType entity,
             int amount
     ) {
+        this(viewer, gift, target, entity, amount, 0);
+    }
 
-        super(viewer, gift, target);
-
+    public MobSpawnEvent(
+            String viewer,
+            GiftType gift,
+            Player target,
+            EntityType entity,
+            int amount,
+            int delayTicks
+    ) {
+        super(viewer, gift, target, delayTicks);
         this.entity = entity;
         this.amount = amount;
-
     }
 
     public EntityType getEntity() {
@@ -32,5 +39,4 @@ public class MobSpawnEvent extends PlayerEvent {
     public int getAmount() {
         return amount;
     }
-
 }

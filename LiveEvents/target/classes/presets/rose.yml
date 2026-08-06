@@ -1,0 +1,20 @@
+id: rose
+
+events:
+  - type: title
+    title: "Rosa recebida!"
+    subtitle: "{viewer} enviou uma Rosa"
+
+  - type: sound
+    sound: ENTITY_PLAYER_LEVELUP
+    delay: 10
+
+  - type: particle
+    particle: HEART
+    amount: 30
+    delay: 10
+
+  - type: spawn_mob
+    mob: ZOMBIE
+    amount: 1
+    delay: 20

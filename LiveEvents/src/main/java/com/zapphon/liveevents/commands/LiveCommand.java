@@ -5,6 +5,10 @@ import com.zapphon.liveevents.core.engine.LiveEngine;
 import com.zapphon.liveevents.core.events.LightningEvent;
 import com.zapphon.liveevents.core.events.MobSpawnEvent;
 import com.zapphon.liveevents.core.events.TntEvent;
+import com.zapphon.liveevents.core.presets.Preset;
+import com.zapphon.liveevents.core.presets.PresetExecutor;
+import com.zapphon.liveevents.core.presets.PresetLoader;
+import com.zapphon.liveevents.core.presets.PresetRegistry;
 import com.zapphon.liveevents.models.GiftType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -21,10 +25,21 @@ public class LiveCommand implements CommandExecutor {
 
     private final LiveEvents plugin;
     private final LiveEngine engine;
+    private final PresetRegistry presetRegistry;
+    private final PresetLoader presetLoader;
+    private final PresetExecutor presetExecutor;
 
-    public LiveCommand(LiveEvents plugin, LiveEngine engine) {
+    public LiveCommand(
+            LiveEvents plugin,
+            LiveEngine engine,
+            PresetRegistry presetRegistry,
+            PresetLoader presetLoader
+    ) {
         this.plugin = plugin;
         this.engine = engine;
+        this.presetRegistry = presetRegistry;
+        this.presetLoader = presetLoader;
+        this.presetExecutor = new PresetExecutor(engine);
     }
 
     @Override
@@ -41,15 +56,96 @@ public class LiveCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            senderPlayer.sendMessage("§aLiveEvents funcionando com a nova engine!");
+            senderPlayer.sendMessage("§aLiveEvents funcionando!");
             enviarAjuda(senderPlayer);
             return true;
         }
 
-        if (!args[0].equalsIgnoreCase("trigger")) {
-            enviarAjuda(senderPlayer);
+        String subcommand = args[0].toLowerCase();
+
+        return switch (subcommand) {
+            case "trigger" -> executarTrigger(senderPlayer, args);
+            case "simulate", "simular", "preset" -> executarPreset(senderPlayer, args);
+            case "reload", "recarregar" -> recarregarPresets(senderPlayer);
+            default -> {
+                enviarAjuda(senderPlayer);
+                yield true;
+            }
+        };
+    }
+
+    private boolean executarPreset(Player senderPlayer, String[] args) {
+
+        if (args.length < 2) {
+            senderPlayer.sendMessage(
+                    "§cUse: /live simulate <preset> [espectador] [alvo]"
+            );
             return true;
         }
+
+        String presetId = args[1];
+
+        Preset preset = presetRegistry.get(presetId);
+
+        if (preset == null) {
+            senderPlayer.sendMessage(
+                    "§cPreset não encontrado: §e" + presetId
+            );
+            return true;
+        }
+
+        String viewerName = args.length >= 3
+                ? args[2]
+                : "Espectador";
+
+        String targetName = args.length >= 4
+                ? args[3]
+                : senderPlayer.getName();
+
+        List<Player> targets = buscarAlvos(
+                targetName,
+                senderPlayer
+        );
+
+        if (targets.isEmpty()) {
+            senderPlayer.sendMessage(
+                    "§cNenhum jogador-alvo foi encontrado."
+            );
+            return true;
+        }
+
+        for (Player target : targets) {
+            presetExecutor.execute(
+                    preset,
+                    viewerName,
+                    target
+            );
+        }
+
+        senderPlayer.sendMessage(
+                "§aPreset §e" + preset.getId()
+                        + " §aadicionado à fila."
+        );
+
+        return true;
+    }
+
+    private boolean recarregarPresets(Player player) {
+
+        presetLoader.load();
+
+        player.sendMessage(
+                "§aPresets recarregados: §e"
+                        + presetRegistry.size()
+        );
+
+        return true;
+    }
+
+    private boolean executarTrigger(
+            Player senderPlayer,
+            String[] args
+    ) {
 
         if (args.length < 2) {
             senderPlayer.sendMessage("§cInforme o evento.");
@@ -72,10 +168,15 @@ public class LiveCommand implements CommandExecutor {
                 ? args[4]
                 : senderPlayer.getName();
 
-        List<Player> targets = buscarAlvos(targetName, senderPlayer);
+        List<Player> targets = buscarAlvos(
+                targetName,
+                senderPlayer
+        );
 
         if (targets.isEmpty()) {
-            senderPlayer.sendMessage("§cNenhum jogador-alvo foi encontrado.");
+            senderPlayer.sendMessage(
+                    "§cNenhum jogador-alvo foi encontrado."
+            );
             return true;
         }
 
@@ -84,7 +185,9 @@ public class LiveCommand implements CommandExecutor {
             case "tnt" -> {
 
                 if (amount > 30) {
-                    senderPlayer.sendMessage("§cO limite temporário é de 30 TNTs.");
+                    senderPlayer.sendMessage(
+                            "§cO limite temporário é de 30 TNTs."
+                    );
                     return true;
                 }
 
@@ -99,14 +202,19 @@ public class LiveCommand implements CommandExecutor {
                     );
                 }
 
-                senderPlayer.sendMessage("§aEvento de TNT adicionado à fila.");
+                senderPlayer.sendMessage(
+                        "§aEvento de TNT adicionado à fila."
+                );
+
                 return true;
             }
 
             case "lightning", "raio" -> {
 
                 if (amount > 10) {
-                    senderPlayer.sendMessage("§cO limite é de 10 raios.");
+                    senderPlayer.sendMessage(
+                            "§cO limite é de 10 raios."
+                    );
                     return true;
                 }
 
@@ -121,7 +229,10 @@ public class LiveCommand implements CommandExecutor {
                     );
                 }
 
-                senderPlayer.sendMessage("§aEvento de raio adicionado à fila.");
+                senderPlayer.sendMessage(
+                        "§aEvento de raio adicionado à fila."
+                );
+
                 return true;
             }
 
@@ -136,7 +247,9 @@ public class LiveCommand implements CommandExecutor {
                 }
 
                 if (amount > 50) {
-                    senderPlayer.sendMessage("§cO limite é de 50 mobs.");
+                    senderPlayer.sendMessage(
+                            "§cO limite é de 50 mobs."
+                    );
                     return true;
                 }
 
@@ -152,13 +265,19 @@ public class LiveCommand implements CommandExecutor {
                     );
                 }
 
-                senderPlayer.sendMessage("§aEvento de mob adicionado à fila.");
+                senderPlayer.sendMessage(
+                        "§aEvento de mob adicionado à fila."
+                );
+
                 return true;
             }
         }
     }
 
-    private int lerQuantidade(String[] args, Player player) {
+    private int lerQuantidade(
+            String[] args,
+            Player player
+    ) {
 
         if (args.length < 3) {
             return 1;
@@ -168,14 +287,18 @@ public class LiveCommand implements CommandExecutor {
             int amount = Integer.parseInt(args[2]);
 
             if (amount < 1) {
-                player.sendMessage("§cA quantidade deve ser maior que zero.");
+                player.sendMessage(
+                        "§cA quantidade deve ser maior que zero."
+                );
                 return -1;
             }
 
             return amount;
 
         } catch (NumberFormatException exception) {
-            player.sendMessage("§cA quantidade precisa ser um número inteiro.");
+            player.sendMessage(
+                    "§cA quantidade precisa ser um número inteiro."
+            );
             return -1;
         }
     }
@@ -237,15 +360,25 @@ public class LiveCommand implements CommandExecutor {
     private void enviarAjuda(Player player) {
 
         player.sendMessage("§6Comandos do LiveEvents:");
+
         player.sendMessage(
                 "§e/live trigger <evento> <quantidade> <espectador> <alvo>"
         );
-        player.sendMessage("§7Alvos: nome do jogador, random ou all");
+
         player.sendMessage(
-                "§7Eventos: creeper, zombie, skeleton, spider, pig, tnt e lightning"
+                "§e/live simulate <preset> <espectador> <alvo>"
         );
+
         player.sendMessage(
-                "§7Exemplo: /live trigger zombie 3 Joao123 Zapphon"
+                "§e/live reload"
+        );
+
+        player.sendMessage(
+                "§7Alvos: nome do jogador, random ou all"
+        );
+
+        player.sendMessage(
+                "§7Exemplo: /live simulate rose Joao123 Zapphon"
         );
     }
 }

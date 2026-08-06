@@ -13,15 +13,21 @@ public class LightningEvent extends PlayerEvent {
             Player target,
             int amount
     ) {
+        this(viewer, gift, target, amount, 0);
+    }
 
-        super(viewer, gift, target);
-
+    public LightningEvent(
+            String viewer,
+            GiftType gift,
+            Player target,
+            int amount,
+            int delayTicks
+    ) {
+        super(viewer, gift, target, delayTicks);
         this.amount = amount;
-
     }
 
     public int getAmount() {
         return amount;
     }
-
 }
