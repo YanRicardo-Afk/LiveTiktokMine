@@ -8,6 +8,7 @@ public class MobSpawnEvent extends PlayerEvent {
 
     private final EntityType entity;
     private final int amount;
+    private final String armor;
 
     public MobSpawnEvent(
             String viewer,
@@ -16,7 +17,15 @@ public class MobSpawnEvent extends PlayerEvent {
             EntityType entity,
             int amount
     ) {
-        this(viewer, gift, target, entity, amount, 0);
+        this(
+                viewer,
+                gift,
+                target,
+                entity,
+                amount,
+                0,
+                null
+        );
     }
 
     public MobSpawnEvent(
@@ -27,9 +36,31 @@ public class MobSpawnEvent extends PlayerEvent {
             int amount,
             int delayTicks
     ) {
+        this(
+                viewer,
+                gift,
+                target,
+                entity,
+                amount,
+                delayTicks,
+                null
+        );
+    }
+
+    public MobSpawnEvent(
+            String viewer,
+            GiftType gift,
+            Player target,
+            EntityType entity,
+            int amount,
+            int delayTicks,
+            String armor
+    ) {
         super(viewer, gift, target, delayTicks);
+
         this.entity = entity;
         this.amount = amount;
+        this.armor = armor;
     }
 
     public EntityType getEntity() {
@@ -38,5 +69,9 @@ public class MobSpawnEvent extends PlayerEvent {
 
     public int getAmount() {
         return amount;
+    }
+
+    public String getArmor() {
+        return armor;
     }
 }

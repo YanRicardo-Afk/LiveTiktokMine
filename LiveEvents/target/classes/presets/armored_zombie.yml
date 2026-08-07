@@ -1,0 +1,12 @@
+id: armored_zombie
+
+events:
+  - type: title
+    title: "Zumbis blindados!"
+    subtitle: "Enviados por {viewer}"
+
+  - type: spawn_mob
+    mob: ZOMBIE
+    amount: 3
+    armor: IRON
+    delay: 20

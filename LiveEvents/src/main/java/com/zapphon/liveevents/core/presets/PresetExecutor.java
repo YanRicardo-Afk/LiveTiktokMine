@@ -7,6 +7,7 @@ import com.zapphon.liveevents.core.events.ParticleEvent;
 import com.zapphon.liveevents.core.events.SoundEvent;
 import com.zapphon.liveevents.core.events.TitleEvent;
 import com.zapphon.liveevents.core.events.TntEvent;
+import com.zapphon.liveevents.core.events.WolfFollowEvent;
 import com.zapphon.liveevents.models.GiftType;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -21,11 +22,7 @@ public class PresetExecutor {
         this.engine = engine;
     }
 
-    public boolean execute(
-            Preset preset,
-            String viewerName,
-            Player target
-    ) {
+    public boolean execute(Preset preset, String viewerName, Player target) {
 
         if (preset == null || target == null) {
             return false;
@@ -39,7 +36,6 @@ public class PresetExecutor {
             switch (type) {
 
                 case "spawn_mob" -> {
-
                     try {
                         EntityType entityType = EntityType.valueOf(
                                 event.getString("mob", "ZOMBIE").toUpperCase()
@@ -52,13 +48,22 @@ public class PresetExecutor {
                                         target,
                                         entityType,
                                         event.getInt("amount", 1),
-                                        delay
+                                        delay,
+                                        event.getString("armor", null)
                                 )
                         );
-
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
+
+                case "tamed_wolf", "follow_wolf" -> engine.submit(
+                        new WolfFollowEvent(
+                                viewerName,
+                                GiftType.FOLLOW,
+                                target,
+                                delay
+                        )
+                );
 
                 case "tnt" -> engine.submit(
                         new TntEvent(
@@ -98,7 +103,6 @@ public class PresetExecutor {
                 );
 
                 case "sound" -> {
-
                     try {
                         Sound sound = Sound.valueOf(
                                 event.getString(
@@ -118,13 +122,11 @@ public class PresetExecutor {
                                         delay
                                 )
                         );
-
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
 
                 case "particle" -> {
-
                     try {
                         Particle particle = Particle.valueOf(
                                 event.getString("particle", "HEART").toUpperCase()
@@ -140,7 +142,6 @@ public class PresetExecutor {
                                         delay
                                 )
                         );
-
                     } catch (IllegalArgumentException ignored) {
                     }
                 }
@@ -153,10 +154,7 @@ public class PresetExecutor {
         return true;
     }
 
-    private String substituirVariaveis(
-            String text,
-            String viewerName
-    ) {
+    private String substituirVariaveis(String text, String viewerName) {
         return text.replace(
                 "{viewer}",
                 viewerName == null ? "Espectador" : viewerName

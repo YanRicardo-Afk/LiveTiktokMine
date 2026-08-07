@@ -1,6 +1,7 @@
 package com.zapphon.liveevents;
 
 import com.zapphon.liveevents.commands.LiveCommand;
+import com.zapphon.liveevents.connectors.simulator.SimulatorApiServer;
 import com.zapphon.liveevents.core.engine.LiveEngine;
 import com.zapphon.liveevents.core.presets.PresetLoader;
 import com.zapphon.liveevents.core.presets.PresetRegistry;
@@ -15,9 +16,12 @@ public class LiveEvents extends JavaPlugin {
     private EventScheduler scheduler;
     private PresetRegistry presetRegistry;
     private PresetLoader presetLoader;
+    private SimulatorApiServer simulatorApiServer;
 
     @Override
     public void onEnable() {
+
+        saveDefaultConfig();
 
         getLogger().info("=================================");
         getLogger().info(" LiveEvents iniciado com sucesso!");
@@ -67,10 +71,22 @@ public class LiveEvents extends JavaPlugin {
                         new PlayerDeathListener(this),
                         this
                 );
+
+        simulatorApiServer = new SimulatorApiServer(
+                this,
+                engine,
+                presetRegistry
+        );
+
+        simulatorApiServer.start();
     }
 
     @Override
     public void onDisable() {
+
+        if (simulatorApiServer != null) {
+            simulatorApiServer.stop();
+        }
 
         if (scheduler != null) {
             scheduler.cancel();

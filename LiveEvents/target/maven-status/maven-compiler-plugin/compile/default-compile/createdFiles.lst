@@ -6,6 +6,7 @@ com/zapphon/liveevents/LiveEvents.class
 com/zapphon/liveevents/core/handlers/EventHandler.class
 com/zapphon/liveevents/core/events/PlayerEvent.class
 com/zapphon/liveevents/core/handlers/TntHandler.class
+com/zapphon/liveevents/connectors/simulator/SimulatorApiServer.class
 com/zapphon/liveevents/core/presets/Preset.class
 com/zapphon/liveevents/models/GiftType.class
 com/zapphon/liveevents/core/events/TntEvent.class
@@ -15,11 +16,13 @@ com/zapphon/liveevents/core/handlers/MobSpawnHandler.class
 com/zapphon/liveevents/core/engine/LiveEngine.class
 com/zapphon/liveevents/listeners/LiveMobDamageListener.class
 com/zapphon/liveevents/core/events/BaseEvent.class
+com/zapphon/liveevents/core/events/WolfFollowEvent.class
 com/zapphon/liveevents/core/presets/PresetExecutor.class
 com/zapphon/liveevents/core/events/ParticleEvent.class
 com/zapphon/liveevents/core/handlers/SoundHandler.class
 com/zapphon/liveevents/core/processors/EventProcessor.class
 com/zapphon/liveevents/core/scheduler/EventScheduler.class
+com/zapphon/liveevents/core/handlers/WolfFollowHandler.class
 com/zapphon/liveevents/core/presets/PresetEvent.class
 com/zapphon/liveevents/core/events/TitleEvent.class
 com/zapphon/liveevents/commands/LiveCommand.class

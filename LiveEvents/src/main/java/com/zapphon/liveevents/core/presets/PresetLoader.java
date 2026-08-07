@@ -3,8 +3,12 @@ package com.zapphon.liveevents.core.presets;
 import com.zapphon.liveevents.LiveEvents;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,7 +33,7 @@ public class PresetLoader {
                 new File(plugin.getDataFolder(), "presets");
 
         criarPasta(presetsFolder);
-        copiarPresetPadrao(presetsFolder);
+        copiarPresetsPadrao();
 
         registry.clear();
 
@@ -39,6 +43,9 @@ public class PresetLoader {
         );
 
         if (files == null) {
+            plugin.getLogger().warning(
+                    "Nenhum arquivo de preset foi encontrado."
+            );
             return;
         }
 
@@ -60,19 +67,84 @@ public class PresetLoader {
         }
     }
 
-    private void copiarPresetPadrao(File folder) {
+    private void copiarPresetsPadrao() {
 
-        File roseFile = new File(folder, "rose.yml");
+        InputStream indexStream =
+                plugin.getResource("presets/index.txt");
 
-        if (roseFile.exists()) {
+        if (indexStream == null) {
+            plugin.getLogger().warning(
+                    "O arquivo presets/index.txt não foi encontrado."
+            );
             return;
         }
 
-        try {
-            plugin.saveResource("presets/rose.yml", false);
-        } catch (IllegalArgumentException exception) {
+        try (
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(
+                                indexStream,
+                                StandardCharsets.UTF_8
+                        )
+                )
+        ) {
+
+            String fileName;
+
+            while ((fileName = reader.readLine()) != null) {
+
+                fileName = fileName.trim();
+
+                if (
+                        fileName.isBlank() ||
+                        fileName.startsWith("#")
+                ) {
+                    continue;
+                }
+
+                copiarPresetSeNaoExistir(fileName);
+            }
+
+        } catch (IOException exception) {
+
             plugin.getLogger().severe(
-                    "O arquivo presets/rose.yml não foi encontrado."
+                    "Erro ao ler presets/index.txt: "
+                            + exception.getMessage()
+            );
+        }
+    }
+
+    private void copiarPresetSeNaoExistir(
+            String fileName
+    ) {
+
+        File destination = new File(
+                new File(plugin.getDataFolder(), "presets"),
+                fileName
+        );
+
+        if (destination.exists()) {
+            return;
+        }
+
+        String resourcePath =
+                "presets/" + fileName;
+
+        try {
+
+            plugin.saveResource(
+                    resourcePath,
+                    false
+            );
+
+            plugin.getLogger().info(
+                    "Preset padrão criado: " + fileName
+            );
+
+        } catch (IllegalArgumentException exception) {
+
+            plugin.getLogger().warning(
+                    "Preset listado, mas não encontrado: "
+                            + resourcePath
             );
         }
     }
@@ -112,20 +184,32 @@ public class PresetLoader {
                 );
             }
 
-            String type =
-                    String.valueOf(options.remove("type"));
+            Object rawType = options.remove("type");
 
-            if (
-                    type == null ||
-                    type.isBlank() ||
-                    type.equals("null")
-            ) {
+            if (rawType == null) {
+                plugin.getLogger().warning(
+                        "Evento sem tipo no preset: " + id
+                );
+                continue;
+            }
+
+            String type =
+                    String.valueOf(rawType).trim();
+
+            if (type.isBlank()) {
                 continue;
             }
 
             events.add(
                     new PresetEvent(type, options)
             );
+        }
+
+        if (events.isEmpty()) {
+            plugin.getLogger().warning(
+                    "Preset sem eventos válidos: " + id
+            );
+            return;
         }
 
         registry.register(

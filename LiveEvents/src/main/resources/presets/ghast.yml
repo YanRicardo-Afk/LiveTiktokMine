@@ -1,0 +1,15 @@
+id: ghast
+
+events:
+  - type: title
+    title: "Ataque aéreo!"
+    subtitle: "{viewer} enviou Ghasts"
+
+  - type: sound
+    sound: ENTITY_GHAST_SCREAM
+    delay: 10
+
+  - type: spawn_mob
+    mob: GHAST
+    amount: 2
+    delay: 20

@@ -7,6 +7,8 @@ import com.zapphon.liveevents.core.events.TitleEvent;
 import com.zapphon.liveevents.core.handlers.ParticleHandler;
 import com.zapphon.liveevents.core.handlers.SoundHandler;
 import com.zapphon.liveevents.core.handlers.TitleHandler;
+import com.zapphon.liveevents.core.events.WolfFollowEvent;
+import com.zapphon.liveevents.core.handlers.WolfFollowHandler;
 import com.zapphon.liveevents.core.events.BaseEvent;
 import com.zapphon.liveevents.core.events.LightningEvent;
 import com.zapphon.liveevents.core.events.MobSpawnEvent;
@@ -34,6 +36,10 @@ public class EventProcessor {
         register(
                 TntEvent.class,
                 new TntHandler()
+        );
+                register(
+                WolfFollowEvent.class,
+                new WolfFollowHandler()
         );
 
         register(
